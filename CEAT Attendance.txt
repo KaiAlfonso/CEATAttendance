@@ -1,0 +1,210 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+   <title>Online Attendance</title>  
+   <link rel="icon" type="image/x-icon" href="C:\Users\Zairiel\Desktop\CEAT LOGO.png">  
+</head>  
+  
+<body bgcolor="maroon">  
+    
+   <style>  
+      .box {  
+        background-color: white;  
+        width: 500px;  
+        margin: 50px;  
+        padding: 20px;  
+        border: 5px solid red;  
+        border-radius: 25px;
+        text-align: center;  
+        position: absolute;   
+        top: 50%;   
+        left: 50%;  
+        transform: translate(-50%, -50%)  
+      } 
+  
+      label {  
+        display: block;  
+        margin-bottom: 5px;  
+        display: flex;  
+      }
+
+      input[type="text"]  
+      textarea {  
+        width: 100%;  
+        padding: 10px;  
+        margin-bottom: 15px;  
+        border: 1px solid white;  
+        border-radius: 3px;  
+        box-sizing: border-box;  
+        display: flex;  
+      }  
+  
+      input[type="submit"] {  
+        background-color: red;  
+        color: white;  
+        padding: 12px 20px;  
+        border: none;  
+        border-radius: 3px;  
+        cursor: pointer;  
+        align-items: center;  
+      }  
+  
+      input[type="submit"]:hover {  
+        background-color: maroon;  
+      } 
+
+      table {  
+        border-collapse: separate;  
+        width: 100%;  
+        }  
+  
+      th, td {  
+        text-align: left;  
+        padding: 8px;  
+        }  
+  
+      tr:nth-child(even) {  
+        background-color: #f2f2f2;  
+        }  
+  
+      th {  
+        background-color: maroon;  
+        color: white;  
+        }  
+   </style>  
+   
+   <div class="box">
+
+      <img src="C:\Users\Zairiel\Desktop\CEAT LOGO.png" width="90px" height="90px">  
+      <img src="C:\Users\Zairiel\Desktop\FB_IMG_1726756853190.png" width="90px" height="90px">
+      <h1><center>CEAT ATTENDANCE</center></h1>
+    
+      <br>
+
+      <form onsubmit="addAttendance(event)">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="Full Name" required>
+
+        <label for="program">Program/Block/Year:</label>
+        <input type="text" id="program" name="Program/Block/Year" required>
+
+        <label for="timeIn">Time in:</label>
+        <input type="text" id="timeIn" name="Time in" required>
+
+        <label for="timeOut">Time out:</label>
+        <input type="text" id="timeOut" name="Time out" required>
+
+        <label for="Date">Date:</label>
+        <input type="text" id="Date" name="Date" required>
+
+        <label for="Student Number">Student Number:</label>
+        <input type="text" id="Student Number" name="Student Number" required>
+
+        <br>
+        <br>  
+  
+        <input type="submit" value="Add Attendance" onclick="addAttendance">  
+      </form>  
+      
+      <br>
+
+      <table id="attendanceTable">  
+        <thead>  
+          <tr>  
+           <th><center>Student Name</center></th>  
+           <th><center>Program/Block/Year</center></th>  
+           <th><center>Time in</center></th>  
+           <th><center>Time out</center></th>  
+           <th><center>Date</center></th>
+           <th><center>Student Number</center></th>
+          </tr>  
+        </thead>  
+        <tbody id="attendanceBody">  
+          <!-- Attendance entries will be added here -->  
+        </tbody>  
+       </table>  
+        
+       <br>  
+  
+       <input type="submit" value="Export To Excel" onclick="exportToExcel()">  
+       <input type="submit" value="Delete" onclick="Deleted()">   
+  </div>
+
+   <script>  
+                    let attendanceData = [];
+                  
+                  function addAttendance(event) {
+                    event.preventDefault();
+
+                    let name = document.getElementById("name").value;
+                    let program = document.getElementById("program").value;
+                    let timeIn = document.getElementById("timeIn").value;
+                    let timeOut = document.getElementById("timeOut").value;
+                    let Date = document.getElementById("Date").value;
+                    let Student Number = document.getElementById("Student Number").value;
+
+                    if (name && program && timeIn && timeOut) {
+                      attendanceData.push({
+                        name: name,
+                        program: program,
+                        timeIn: timeIn,
+                        timeOut: timeOut,
+                        Date: Date,
+                        Student Number: Student Number
+                      });
+                
+                      updateAttendanceTable();
+                      clearForm();
+                    } else {
+                      alert("Please fill in all fields.");
+                    }
+                  }
+                
+                  function updateAttendanceTable() {
+                    let tableBody = document.getElementById("attendanceTable").getElementsByTagName("tbody")[0];
+                    tableBody.innerHTML = ""; // Clear existing entries
+                
+                    for (let i = 0; i < attendanceData.length; i++) {
+                      let row = tableBody.insertRow();
+                      let nameCell = row.insertCell();
+                      let ProgramCell = row.insertCell();
+                      let timeInCell = row.insertCell();
+                      let timeOutCell = row.insertCell();
+                      let DateCell = row.insertCell();
+                      let StudentNumberCell = row.insertCell();
+                
+                      nameCell.innerHTML = attendanceData[i].name;
+                      ProgramCell.innerHTML = attendanceData[i].program;
+                      timeInCell.innerHTML = attendanceData[i].timeIn;
+                      timeOutCell.innerHTML = attendanceData[i].timeOut;
+                      DateCell.innerHTML = attendanceData[i].Date;
+                      StudentNumberCell.innerHTML = attendanceData[i].Student Number;
+                    }
+                  }
+                
+  
+      function exportToExcel() {  
+        const excelData = attendanceData.map((attendance) => [  
+           attendance.name,  
+           attendance.program,  
+           attendance.timeIn,  
+           attendance.timeOut,
+           attendance.Date,
+           attendance.Student Number,  
+        ]);  
+  
+        const wb = XLSX.utils.book_new();  
+        const ws = XLSX.utils.aoa_to_sheet(excelData);  
+        XLSX.utils.book_append_sheet(wb, ws, "Attendance");  
+        XLSX.writeFile(wb, "CEAT attendance.xlsx");  
+      }  
+  
+      function Deleted() {  
+        attendanceData = [];  
+        document.getElementById('attendanceBody').innerHTML = '';  
+      }  
+   </script>  
+  
+   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>  
+</body>  
+</html>
